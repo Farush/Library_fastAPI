@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  mysql_server:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'Library_clients'
+      MYSQL_ROOT_PASSWORD: '7889'
+
+    networks:
+      - library_network
+
+  fastapi_app:
+    build: ./fastapi_app
+    command:
+      [
+        "./wait-for-it.sh",
+        "mysql_server:3306",
+        "--",
+        "uvicorn",
+        "main:app",
+        "--host",
+        "0.0.0.0",
+        "--reload"
+      ]
+
+    networks:
+      - library_network
+    ports:
+      - "8000:8000"
+
+networks:
+  library_network:
+
+
